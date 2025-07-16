@@ -10,10 +10,12 @@ const Home: React.FC = () => {
 
   return (
     <div>
-      <h2>Select Project</h2>
-      <input type="text" onChange={onSelect} placeholder="/path/to/project" />
+      <h2>Choose project directory</h2>
+      <label htmlFor="project-path" className="sr-only">Project path</label>
+      <input id="project-path" type="text" onChange={onSelect} placeholder="/path/to/project" />
     </div>
   );
 };
 
 export default Home;
+

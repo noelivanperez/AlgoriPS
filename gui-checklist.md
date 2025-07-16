@@ -41,3 +41,4 @@
 - [x] Configurar scripts de empaquetado (`npm run make`) con Electron Builder para Windows y macOS  
 - [x] Documentar instalación y uso en `docs/gui_setup.md`  
 - [x] Validación general: ejecutar todas las pruebas unitarias, corregir cualquier error y optimizar donde sea necesario  
+\nChecklist completado.

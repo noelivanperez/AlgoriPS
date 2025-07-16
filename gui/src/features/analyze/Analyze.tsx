@@ -11,7 +11,7 @@ const Analyze: React.FC = () => {
     <div>
       <h2>Analysis</h2>
       <Card>
-        <LineChart width={400} height={200} data={data}>
+        <LineChart width={400} height={200} data={data} aria-label="Metrics chart">
           <XAxis dataKey="name" />
           <YAxis />
           <Line type="monotone" dataKey="value" stroke="#8884d8" />
@@ -22,3 +22,4 @@ const Analyze: React.FC = () => {
 };
 
 export default Analyze;
+

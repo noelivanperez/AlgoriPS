@@ -1,4 +1,5 @@
 import React from 'react';
+import "./src/styles/theme.css";
 import { createRoot } from 'react-dom/client';
 import Layout from './src/layouts/Layout';
 import Home from './src/features/home/Home';

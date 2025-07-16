@@ -18,11 +18,12 @@ const SettingsPage: React.FC = () => {
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <input name="example" onChange={onChange} value={(local as any).example || ''} />
+    <form onSubmit={onSubmit} aria-label="Settings form">
+      <input name="example" onChange={onChange} value={(local as any).example || ''} aria-label="Example setting" />
       <button type="submit">Save</button>
     </form>
   );
 };
 
 export default SettingsPage;
+
