@@ -1,10 +1,13 @@
 import json
 from pathlib import Path
+import subprocess
 
 import click
 
 from algorips import __version__
 from algorips.core.analyzer import CodeAnalyzer
+from algorips.core.git import local
+from algorips.core.git.github import GitHubClient
 
 DEFAULT_CONFIG = (
     "database:\n"
@@ -61,6 +64,87 @@ def apply_rule(rule_id: str, file_path: str) -> None:
         click.echo("Patch applied")
     else:
         click.echo("Failed to apply patch")
+
+
+@cli.group()
+def repo() -> None:
+    """Repository management commands."""
+
+
+@repo.command()
+@click.argument("url")
+@click.option("--dest", default=".", help="Destination directory")
+def clone(url: str, dest: str) -> None:
+    """Clone a repository."""
+    local.clone(url, dest)
+    click.echo(f"Cloned into {dest}")
+
+
+@repo.command()
+@click.argument("name")
+def branch(name: str) -> None:
+    """Create and checkout a new branch."""
+    local.checkout_branch(name, create=True)
+    click.echo(f"Switched to {name}")
+
+
+@repo.command()
+@click.argument("message")
+def commit(message: str) -> None:
+    """Commit all changes with MESSAGE."""
+    local.commit_all(message)
+    click.echo("Commit created")
+
+
+@repo.group()
+def pr() -> None:
+    """Pull request operations."""
+
+
+@pr.command("create")
+@click.option("--owner", required=True)
+@click.option("--repo", "repo_name", required=True)
+@click.option("--base", default="main")
+@click.option("--reviewers", default="")
+@click.option("--labels", default="")
+@click.option("--token", envvar="GITHUB_TOKEN", required=True)
+@click.argument("title")
+@click.option("--body", default="")
+def pr_create(owner: str, repo_name: str, base: str, reviewers: str, labels: str, token: str, title: str, body: str) -> None:
+    """Create a pull request from current branch."""
+    head = subprocess.run([
+        "git",
+        "rev-parse",
+        "--abbrev-ref",
+        "HEAD",
+    ], capture_output=True, text=True, check=True).stdout.strip()
+    client = GitHubClient(token)
+    pr = client.create_pull_request(
+        owner,
+        repo_name,
+        head,
+        base,
+        title,
+        body,
+        reviewers.split(",") if reviewers else None,
+        labels.split(",") if labels else None,
+    )
+    click.echo(f"Created PR #{pr['number']}")
+
+
+@pr.command("merge")
+@click.argument("pr_number", type=int)
+@click.option("--owner", required=True)
+@click.option("--repo", "repo_name", required=True)
+@click.option("--token", envvar="GITHUB_TOKEN", required=True)
+def pr_merge(pr_number: int, owner: str, repo_name: str, token: str) -> None:
+    """Merge the given pull request."""
+    client = GitHubClient(token)
+    result = client.merge_pull_request(owner, repo_name, pr_number)
+    if result.get("merged"):
+        click.echo("PR merged")
+    else:
+        click.echo("Merge failed")
 
 if __name__ == '__main__':
     cli()

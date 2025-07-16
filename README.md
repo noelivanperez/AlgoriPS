@@ -52,3 +52,13 @@ Ejecute el análisis de código en un directorio::
 Run tests with::
 
     pytest
+
+## Repository CLI
+
+Clone and manage repositories::
+
+    python -m algorips repo clone https://github.com/user/repo.git --dest myrepo
+    python -m algorips repo branch feature1
+    python -m algorips repo commit "add feature"
+    python -m algorips repo pr create --owner user --repo repo --token TOKEN "My PR"
+    python -m algorips repo pr merge 1 --owner user --repo repo --token TOKEN
