@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppStore } from '../../store';
 import Card from '../../components/Card';
+import Spinner from '../../components/Spinner';
 import { LineChart, Line, XAxis, YAxis } from 'recharts';
 
 const Analyze: React.FC = () => {
   const result = useAppStore(state => state.analysisResult);
+  const [loading, setLoading] = useState(true);
   const data = result ? (result as any).metrics || [] : [];
 
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+
+  if (loading) return <Spinner />;
   return (
     <div>
       <h2>Analysis</h2>

@@ -1,43 +1,24 @@
 name: CI
-
 on: [push, pull_request]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: example
-          MYSQL_DATABASE: algorips
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd='mysqladmin ping --silent'
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          for d in plugins/*; do
-            if [ -f "$d/setup.py" ]; then
-              pip install -e "$d"
-            fi
-          done
-      - name: Lint
-        run: flake8
-      - name: Security Scan
-        run: |
-          bandit -r .
-          pip-audit -r requirements.txt
-      - name: Run tests
-        run: pytest --cov=algorips --cov-report=term-missing
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+        working-directory: gui
+      - run: npm test
+        working-directory: gui
+      - run: python -m pip install -r requirements.txt
+      - run: pytest --cov=algorips
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: .coverage

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { listPlugins, installPlugin, uninstallPlugin } from '../../utils/api';
+import Spinner from '../../components/Spinner';
 
 interface PluginInfo {
   name: string;
@@ -10,6 +11,7 @@ interface PluginInfo {
 const Plugins: React.FC = () => {
   const [plugins, setPlugins] = useState<PluginInfo[]>([]);
   const [path, setPath] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const fetchPlugins = async () => {
     const data = await listPlugins();
@@ -17,7 +19,7 @@ const Plugins: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchPlugins();
+    fetchPlugins().finally(() => setLoading(false));
   }, []);
 
   const onInstall = async () => {
@@ -31,6 +33,7 @@ const Plugins: React.FC = () => {
     fetchPlugins();
   };
 
+  if (loading) return <Spinner />;
   return (
     <div>
       <h2>Plugins</h2>
