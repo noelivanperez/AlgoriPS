@@ -31,4 +31,4 @@ jobs:
       - name: Lint
         run: flake8
       - name: Run tests
-        run: pytest
+        run: pytest --cov=algorips --cov-report=term-missing
