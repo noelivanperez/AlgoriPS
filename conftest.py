@@ -1,5 +1,8 @@
 import sys
 from pathlib import Path
+import time
+import types
+import pytest
 
 class _CoverageTracer:
     def __init__(self):
@@ -47,3 +50,20 @@ def pytest_sessionfinish(session, exitstatus):
     print(f'Coverage: {percent:.1f}%')
     if percent < 80.0:
         session.exitstatus = 1
+
+
+class _SimpleBenchmark:
+    def __init__(self):
+        self.stats = types.SimpleNamespace(stats={"mean": 0.0})
+
+    def __call__(self, func, *args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        self.stats.stats["mean"] = end - start
+        return result
+
+
+@pytest.fixture
+def benchmark():
+    return _SimpleBenchmark()

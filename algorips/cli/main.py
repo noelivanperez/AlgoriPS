@@ -9,6 +9,7 @@ from algorips.core.analyzer import CodeAnalyzer
 from algorips.core.git import local
 from algorips.core.git.github import GitHubClient
 from algorips.core.plugins import PluginManager
+from algorips.core.rag import RAGEngine
 
 DEFAULT_CONFIG = (
     "database:\n"
@@ -65,6 +66,18 @@ def apply_rule(rule_id: str, file_path: str) -> None:
         click.echo("Patch applied")
     else:
         click.echo("Failed to apply patch")
+
+
+@cli.command("rag")
+@click.argument("docs", nargs=-1, type=click.Path(exists=True))
+@click.option("--query", "query_text", required=True)
+def rag_cmd(docs: tuple[str, ...], query_text: str) -> None:
+    """Query documents using a simple RAG engine."""
+    engine = RAGEngine(docs, use_faiss=False)
+    engine.ingest()
+    results = engine.query(query_text)
+    for res in results:
+        click.echo(res)
 
 
 @cli.group()
