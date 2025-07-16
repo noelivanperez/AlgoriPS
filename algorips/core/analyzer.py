@@ -42,7 +42,7 @@ class CodeAnalyzer:
             if any(part in {"__pycache__", ".git"} for part in py_file.parts):
                 continue
 
-            text = py_file.read_text()
+            text = py_file.read_text(encoding="utf-8")
             metrics["line_count"] += len(text.splitlines())
             metrics["function_count"] += len(pattern_func.findall(text))
             metrics["class_count"] += len(pattern_class.findall(text))
