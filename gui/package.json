@@ -5,7 +5,8 @@
   "main": "main.js",
   "scripts": {
     "test": "jest",
-    "start": "electron .",
+    "start": "npm run build && electron .",
+    "build": "tsc",
     "make": "electron-builder"
   },
   "keywords": [],

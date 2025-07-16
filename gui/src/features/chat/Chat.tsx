@@ -100,6 +100,8 @@ const Chat: React.FC = () => {
   const runQuery = async () => {
     const data = await executeQuery(name, sql);
     setRows(data);
+  };
+
   const onSend = () => {
     if (input.trim()) send(input.trim());
   };
