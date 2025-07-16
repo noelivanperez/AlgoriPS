@@ -10,4 +10,6 @@
    the TypeScript sources, generating `dist/index.js`, and then launches
    Electron.
 4. Build the desktop app with `npm run make`.
+5. Ensure that Node integration is enabled in Electron. The renderer code is
+   loaded directly from disk and requires access to Node APIs.
 
