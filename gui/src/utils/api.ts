@@ -18,3 +18,29 @@ export async function runTests(suite?: string): Promise<TestReport> {
 export async function saveSettings(cfg: Settings): Promise<void> {
   console.log('saveSettings', cfg);
 }
+
+// Repository API stubs
+export async function cloneRepo(url: string, dest: string): Promise<void> {
+  console.log('cloneRepo', url, dest);
+}
+
+export async function createBranch(name: string): Promise<void> {
+  console.log('createBranch', name);
+}
+
+export async function commitChanges(msg: string): Promise<void> {
+  console.log('commitChanges', msg);
+}
+
+export async function listPullRequests(): Promise<any[]> {
+  console.log('listPullRequests');
+  return [];
+}
+
+export async function openPullRequest(): Promise<void> {
+  console.log('openPullRequest');
+}
+
+export async function mergePullRequest(num: number): Promise<void> {
+  console.log('mergePullRequest', num);
+}

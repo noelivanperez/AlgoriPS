@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import Layout from './src/layouts/Layout';
 import Home from './src/features/home/Home';
 import Analyze from './src/features/analyze/Analyze';
+import Repository from './src/features/repository/Repository';
 import { useAppStore } from './src/store';
 
 const RootApp: React.FC = () => {
@@ -11,6 +12,7 @@ const RootApp: React.FC = () => {
   return (
     <Layout>
       {projectPath ? <Analyze /> : <Home />}
+      <Repository />
     </Layout>
   );
 };
