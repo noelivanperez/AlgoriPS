@@ -1,0 +1,24 @@
+# Checklist de Fase 3 – Análisis Semántico y Refactorización
+
+- [x] Implementar `core/semantic/semantic_analyzer.py` con clase `SemanticAnalyzer` que:
+  - Recorra el AST de archivos Python.
+  - Construya un grafo de dependencias con `networkx`.
+  - Exporte JSON con nodos (entidad, tipo, ubicación) y aristas (llamada, herencia, import).
+- [x] Definir reglas de calidad en `core/semantic/rules.py`:
+  - Umbrales configurables (longitud de función, métodos por clase, complejidad).
+  - Mapeo `rule_id` → descripción.
+- [x] Crear módulo `core/semantic/patcher.py` que:
+  - Genere diffs unificados (`generate_patch(rule_id, file_path)`).
+  - Aplique parches con `git apply --check` y `git apply`.
+- [x] Extender CLI (`cli/main.py`):
+  - Comando `algorips analyze --deep [path]` para producir JSON semántico.
+  - Subcomando `algorips apply-rule RULE_ID` para aplicar un parche.
+- [x] Añadir nueva pestaña **Semantic Insights** en GUI (`gui/src/features/semantic`):
+  - Visualizar grafo interactivo.
+  - Listar sugerencias con botones “Preview diff” y “Apply”.
+- [x] Escribir pruebas unitarias:
+  - `tests/test_semantic_analyzer.py`
+  - `tests/test_patcher.py`
+  - Cobertura ≥ 90 % en `core/semantic` y `core/patcher`.
+- [x] Actualizar CI (GitHub Actions) para ejecutar la nueva suite de tests.
+- [x] **Validación general**: ejecutar todas las pruebas unitarias, corregir cualquier error detectado y optimizar el rendimiento donde sea necesario.

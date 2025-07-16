@@ -4,3 +4,4 @@ SQLAlchemy
 PyMySQL
 pytest
 flake8
+networkx
