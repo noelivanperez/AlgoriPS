@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
+import fs from 'fs';
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -13,7 +14,10 @@ function createWindow() {
   if (process.env.NODE_ENV === 'development') {
     win.loadURL('http://localhost:3000');
   } else {
-    win.loadFile(path.join(__dirname, 'index.html'));
+    const devPath = path.join(__dirname, 'public', 'index.html');
+    const prodPath = path.join(__dirname, '..', 'public', 'index.html');
+    const target = fs.existsSync(devPath) ? devPath : prodPath;
+    win.loadFile(target);
   }
 }
 
