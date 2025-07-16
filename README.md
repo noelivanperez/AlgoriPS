@@ -3,14 +3,28 @@
 AlgoriPS aims to provide a local AI assistant for code analysis and refactoring. The
 project integrates an Ollama LLM, MySQL for persistent storage, and a modular CLI.
 
-## Development
+## Pre-requisitos
 
-Requirements are listed in `requirements.txt`. A Docker Compose file is provided to
-start services for MySQL, Adminer, and Ollama. Copy `.env.example` to `.env` and
-adjust values before running the stack::
+* Python 3.10 o superior
+* Docker y Docker Compose
+
+## Comandos Docker
+
+Copie primero el archivo de ejemplo de variables de entorno y luego inicie los
+servicios de base de datos y Ollama::
 
     cp .env.example .env
     docker compose up -d
+
+Para detener todos los servicios::
+
+    docker compose down
+
+## Desarrollo
+
+Requirements are listed in `requirements.txt`. A Docker Compose file is provided to
+start services for MySQL, Adminer, and Ollama. Copy `.env.example` to `.env` and
+adjust values before running the stack.
 
 Activate the virtual environment and install dependencies::
 
@@ -24,6 +38,16 @@ script creates a `projects` table that stores analyzed project metadata.
 Run the CLI::
 
     python -m algorips --help
+
+## Ejemplos de uso CLI
+
+Inicialice una configuración por defecto en el directorio actual::
+
+    python -m algorips init
+
+Ejecute el análisis de código en un directorio::
+
+    python -m algorips analyze path/to/project
 
 Run tests with::
 

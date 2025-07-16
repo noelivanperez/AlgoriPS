@@ -1,0 +1,2 @@
+Usuario → CLI "analyze" → CodeAnalyzer.scan → salida JSON →
+Usuario revisa métricas
