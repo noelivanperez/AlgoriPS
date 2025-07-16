@@ -1,5 +1,4 @@
 import json
-from dataclasses import asdict
 from pathlib import Path
 
 import click
@@ -37,7 +36,7 @@ def analyze(path: str) -> None:
     """Run code analysis on the given PATH."""
     analyzer = CodeAnalyzer()
     result = analyzer.scan(path)
-    click.echo(json.dumps(asdict(result), indent=2))
+    click.echo(json.dumps(result, indent=2))
 
 
 if __name__ == '__main__':

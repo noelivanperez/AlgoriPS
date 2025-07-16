@@ -18,3 +18,5 @@ def test_analyze_smoke(tmp_path):
     result = runner.invoke(cli, ['analyze', str(tmp_path)])
     assert result.exit_code == 0
     assert 'line_count' in result.output
+    assert 'function_count' in result.output
+    assert 'class_count' in result.output
