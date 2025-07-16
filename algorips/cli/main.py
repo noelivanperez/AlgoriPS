@@ -6,6 +6,7 @@ import click
 
 from algorips import __version__
 from algorips.core.analyzer import CodeAnalyzer
+from algorips.core import scraper
 from algorips.core.git import local
 from algorips.core.git.github import GitHubClient
 from algorips.core.plugins import PluginManager
@@ -65,6 +66,15 @@ def apply_rule(rule_id: str, file_path: str) -> None:
         click.echo("Patch applied")
     else:
         click.echo("Failed to apply patch")
+
+
+@cli.command()
+@click.argument("config_path")
+def scrape(config_path: str) -> None:
+    """Scrape pages defined in CONFIG_PATH."""
+    cfg = scraper.load_config(config_path)
+    results = scraper.WebScraper(cfg).scrape()
+    click.echo(json.dumps(results, indent=2))
 
 
 @cli.group()

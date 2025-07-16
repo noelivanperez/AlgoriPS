@@ -1,8 +1,11 @@
 from pathlib import Path
 import subprocess
+import pytest
 
 from algorips.core.analyzer import CodeAnalyzer
 from algorips.core.semantic.patcher import Patcher
+
+pytest.importorskip("pytest_benchmark")
 
 
 def _create_repo(path: Path, files: int = 5) -> Path:

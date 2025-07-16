@@ -11,3 +11,4 @@ locust
 pytest-benchmark
 bandit
 pip-audit
+PyYAML
