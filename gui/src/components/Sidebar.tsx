@@ -1,6 +1,5 @@
 import React from 'react';
-import { Layers, Wand2, FlaskConical, Plug, Database } from 'lucide-react';
-import { Layers, Wand2, FlaskConical, Plug, BarChart2 } from 'lucide-react';
+import { Layers, Wand2, FlaskConical, Plug, BarChart2, Database } from 'lucide-react';
 
 const Sidebar: React.FC = () => (
   <nav className="sidebar">

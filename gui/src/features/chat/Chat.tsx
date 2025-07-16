@@ -46,7 +46,6 @@ async function exportMessages(): Promise<string> {
   return JSON.stringify(msgs, null, 2);
 }
 
-import React, { useState } from 'react';
 import { executeQuery } from '../../utils/api';
 
 const Chat: React.FC = () => {
