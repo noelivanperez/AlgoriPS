@@ -69,3 +69,11 @@ a { color: inherit; text-decoration: none; }
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.footer {
+  padding: var(--space);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text);
+}
