@@ -1,0 +1,15 @@
+# Build stage
+FROM node:18-slim AS builder
+WORKDIR /app
+COPY gui/package.json gui/package-lock.json ./
+RUN npm ci --legacy-peer-deps
+COPY gui ./gui
+RUN npm run --prefix gui build
+
+# Runtime stage
+FROM node:18-slim
+WORKDIR /app/gui
+COPY --from=builder /app/gui/dist ./dist
+COPY --from=builder /app/gui/package.json ./
+RUN npm install --production --legacy-peer-deps
+CMD ["npm", "start"]

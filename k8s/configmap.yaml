@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: algorips-config
+data:
+  OLLAMA_TEMPERATURE: "0.7"
+  OLLAMA_MAX_TOKENS: "4096"
+  OLLAMA_BATCH_SIZE: "8"

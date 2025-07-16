@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: algorips
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: algorips
+  template:
+    metadata:
+      labels:
+        app: algorips
+    spec:
+      containers:
+        - name: core
+          image: algorips/core:latest
+          envFrom:
+            - configMapRef:
+                name: algorips-config
+            - secretRef:
+                name: algorips-secret
+          resources:
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+              nvidia.com/gpu: "1"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          ports:
+            - containerPort: 8000
+      restartPolicy: Always

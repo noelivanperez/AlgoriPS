@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  algorips:
+    image: algorips/core:latest
+    environment:
+      - OLLAMA_TEMPERATURE=0.7
+      - OLLAMA_MAX_TOKENS=4096
+      - OLLAMA_BATCH_SIZE=8
+    ports:
+      - "8000:8000"

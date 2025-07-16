@@ -5,3 +5,5 @@ PyMySQL
 pytest
 flake8
 networkx
+Flask
+prometheus_client
