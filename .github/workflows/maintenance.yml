@@ -1,33 +1,35 @@
-name: Mantenimiento
+name: Maintenance
 
 on:
   schedule:
-    - cron: '0 0 * * 0' # se ejecuta cada semana
+    - cron: '0 0 * * 0'
   workflow_dispatch:
 
 jobs:
-  audit:
+  security-audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      - name: Instalar dependencias y pip-audit # preparamos el entorno
+      - name: Install audit tools
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pip-audit
-      - name: Revisar dependencias # ejecuta la auditoría
+          pip install pip-audit bandit
+      - name: Run pip-audit
         run: pip-audit
+      - name: Run bandit
+        run: bandit -r algorips -x tests
 
   notify-failures:
-    needs: audit
+    needs: security-audit
     runs-on: ubuntu-latest
     steps:
-      - name: Enviar resumen a Slack si fallaron pruebas
-        if: failure() # solo si algo falló antes
+      - name: Alert via Slack on failure
+        if: failure()
         uses: slackapi/slack-github-action@v1.23.0
         with:
-          payload: '{"text":"Las pruebas fallaron en el workflow de mantenimiento."}'
+          payload: '{"text":"Security workflow failed."}'
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK }}

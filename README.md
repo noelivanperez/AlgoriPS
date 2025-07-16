@@ -8,6 +8,17 @@ project integrates an Ollama LLM, MySQL for persistent storage, and a modular CL
 * Python 3.10 o superior
 * Docker y Docker Compose
 
+## Workflows CI/CD
+La carpeta `.github/workflows` contiene los flujos de trabajo que
+automatizan la validación y el despliegue del proyecto.
+- **ci.yml** ejecuta `flake8` y las pruebas unitarias e
+  integrales por cada *push* o *pull request*.
+- **deploy.yml** construye las imágenes Docker y publica la
+  aplicación con `docker-compose.prod.yml` o los manifests de
+  Kubernetes.
+- **maintenance.yml** corre semanalmente `pip-audit` y `bandit`,
+  enviando una alerta a Slack si aparecen vulnerabilidades.
+
 ## Comandos Docker
 
 Copie primero el archivo de ejemplo de variables de entorno y luego inicie los

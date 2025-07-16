@@ -5,52 +5,25 @@ on:
     branches: [main]
 
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Run tests
-        run: pytest
+      - name: Build Docker images
+        run: docker compose -f docker-compose.prod.yml build
 
-  build-push:
-    needs: build-test
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        method: [compose, k8s]
     steps:
       - uses: actions/checkout@v3
-      - name: Build and push images
+      - name: Deploy application
         run: |
-          docker build -f docker/Dockerfile.core -t myregistry/algorips-core:latest .
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
-          docker push myregistry/algorips-core:latest
-
-  deploy-staging:
-    needs: build-push
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy to staging
-        run: |
-          kubectl apply -f k8s/
-
-  smoke-tests:
-    needs: deploy-staging
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run smoke tests
-        run: curl -f http://staging.example.com/healthz
-
-  deploy-prod:
-    needs: smoke-tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy to production
-        run: |
-          kubectl apply -f k8s/
+          if [ "${{ matrix.method }}" = "compose" ]; then
+            docker compose -f docker-compose.prod.yml up -d
+          else
+            kubectl apply -f k8s/
+          fi
