@@ -44,3 +44,17 @@ export async function openPullRequest(): Promise<void> {
 export async function mergePullRequest(num: number): Promise<void> {
   console.log('mergePullRequest', num);
 }
+
+// Plugin API stubs
+export async function listPlugins(): Promise<any[]> {
+  console.log('listPlugins');
+  return [];
+}
+
+export async function installPlugin(path: string): Promise<void> {
+  console.log('installPlugin', path);
+}
+
+export async function uninstallPlugin(name: string): Promise<void> {
+  console.log('uninstallPlugin', name);
+}

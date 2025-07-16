@@ -28,6 +28,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          for d in plugins/*; do
+            if [ -f "$d/setup.py" ]; then
+              pip install -e "$d"
+            fi
+          done
       - name: Lint
         run: flake8
       - name: Run tests

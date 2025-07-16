@@ -8,6 +8,7 @@ from algorips import __version__
 from algorips.core.analyzer import CodeAnalyzer
 from algorips.core.git import local
 from algorips.core.git.github import GitHubClient
+from algorips.core.plugins import PluginManager
 
 DEFAULT_CONFIG = (
     "database:\n"
@@ -145,6 +146,39 @@ def pr_merge(pr_number: int, owner: str, repo_name: str, token: str) -> None:
         click.echo("PR merged")
     else:
         click.echo("Merge failed")
+
+
+# Plugin commands
+plugin_manager = PluginManager()
+
+
+@cli.group()
+def plugin() -> None:
+    """Plugin management commands."""
+
+
+@plugin.command("list")
+def plugin_list() -> None:
+    """List installed plugins."""
+    for info in plugin_manager.list_plugins():
+        status = "[active]" if info["active"] else ""
+        click.echo(f"{info['name']} {info['version']} {status}")
+
+
+@plugin.command("install")
+@click.argument("path")
+def plugin_install(path: str) -> None:
+    """Install plugin from PATH or URL."""
+    plugin_manager.install(path)
+    click.echo("Plugin installed")
+
+
+@plugin.command("uninstall")
+@click.argument("name")
+def plugin_uninstall(name: str) -> None:
+    """Uninstall plugin by NAME."""
+    plugin_manager.uninstall(name)
+    click.echo("Plugin uninstalled")
 
 if __name__ == '__main__':
     cli()
