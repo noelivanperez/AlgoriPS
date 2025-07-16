@@ -33,6 +33,7 @@
     "@types/jest": "^29.0.0",
     "ts-jest": "^29.0.0",
     "ts-node": "^10.0.0",
-    "electron-builder": "^24.0.0"
+    "electron-builder": "^24.0.0",
+    "@testing-library/jest-dom": "^6.1.5"
   }
 }
