@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import shutil
+from importlib import metadata
 from pathlib import Path
 from typing import Any, Dict, Iterable
 
@@ -20,28 +22,55 @@ class PluginManager:
         self.gui_registry = gui_registry
         self._plugins: Dict[str, BasePlugin] = {}
         self._active: set[str] = set()
+        self._state_file = self.plugin_dir / "active.json"
+        self._load_state()
+
+    # ------------------------------------------------------------------
+    # persistence helpers
+    # ------------------------------------------------------------------
+    def _load_state(self) -> None:
+        if self._state_file.exists():
+            try:
+                data = json.loads(self._state_file.read_text())
+                if isinstance(data, list):
+                    self._active = set(data)
+            except json.JSONDecodeError:
+                self._active = set()
+
+    def _save_state(self) -> None:
+        self._state_file.parent.mkdir(parents=True, exist_ok=True)
+        self._state_file.write_text(json.dumps(sorted(self._active)))
 
     def discover(self) -> Dict[str, BasePlugin]:
         """Scan plugin directory and return discovered plugins."""
         self._plugins.clear()
-        if not self.plugin_dir.exists():
-            return self._plugins
-        for path in self.plugin_dir.iterdir():
-            if not path.is_dir():
+        if self.plugin_dir.exists():
+            for path in self.plugin_dir.iterdir():
+                if not path.is_dir():
+                    continue
+                init_py = path / "__init__.py"
+                if not init_py.exists():
+                    continue
+                mod_name = path.name.replace('-', '_')
+                spec = importlib.util.spec_from_file_location(
+                    f"plugins.{mod_name}", init_py
+                )
+                if not spec or not spec.loader:
+                    continue
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)  # type: ignore[attr-defined]
+                plugin_cls = getattr(module, "Plugin", None)
+                if not plugin_cls:
+                    continue
+                plugin: BasePlugin = plugin_cls()
+                self._plugins[plugin.name()] = plugin
+
+        for ep in metadata.entry_points().select(group="algorips.plugins"):
+            try:
+                plugin_cls = ep.load()
+            except Exception:  # pragma: no cover - error loading external plugin
                 continue
-            init_py = path / "__init__.py"
-            if not init_py.exists():
-                continue
-            mod_name = path.name.replace('-', '_')
-            spec = importlib.util.spec_from_file_location(f"plugins.{mod_name}", init_py)
-            if not spec or not spec.loader:
-                continue
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)  # type: ignore[attr-defined]
-            plugin_cls = getattr(module, "Plugin", None)
-            if not plugin_cls:
-                continue
-            plugin: BasePlugin = plugin_cls()
+            plugin = plugin_cls()
             self._plugins[plugin.name()] = plugin
         return self._plugins
 
@@ -55,6 +84,8 @@ class PluginManager:
             yield {
                 "name": plugin.name(),
                 "version": plugin.version(),
+                "description": getattr(plugin, "description", ""),
+                "dependencies": getattr(plugin, "dependencies", []),
                 "active": name in self._active,
             }
 
@@ -65,10 +96,12 @@ class PluginManager:
         plugin = self._plugins[name]
         plugin.register(self.cli, self.gui_registry)
         self._active.add(name)
+        self._save_state()
 
     def deactivate(self, name: str) -> None:
         """Deactivate a plugin without removing it."""
         self._active.discard(name)
+        self._save_state()
 
     def install(self, src: str | Path) -> Path:
         """Install a plugin from a directory or zip archive."""
@@ -89,3 +122,4 @@ class PluginManager:
             shutil.rmtree(path)
         self._plugins.pop(name, None)
         self._active.discard(name)
+        self._save_state()

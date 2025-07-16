@@ -33,6 +33,11 @@ class BasePlugin(ABC):
         """
 
     @property
+    def description(self) -> str:
+        """Short summary of what the plugin provides."""
+        return ""
+
+    @property
     def dependencies(self) -> list[str]:
         """List optional external dependencies required by the plugin."""
         return []
