@@ -3,3 +3,4 @@ requests
 SQLAlchemy
 PyMySQL
 pytest
+flake8
