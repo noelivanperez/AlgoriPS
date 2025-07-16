@@ -2,6 +2,7 @@ from flask import Flask, Response, jsonify, request
 from prometheus_client import generate_latest, Counter, Summary
 import time
 from .analyzer import CodeAnalyzer
+from .db_connector import execute_query
 
 app = Flask(__name__)
 REQUESTS = Counter('algorips_requests_total', 'Total requests')
@@ -28,6 +29,19 @@ def analyze_route():
     ANALYSIS_COUNT.inc()
     ANALYSIS_LATENCY.observe(duration)
     return jsonify(result)
+
+
+@app.route('/db/query', methods=['POST'])
+def db_query_route():
+    """Run a parameterized SQL query using stored credentials."""
+    data = request.get_json(force=True) or {}
+    name = data.get('name')
+    sql = data.get('sql')
+    params = data.get('params') or {}
+    if not name or not sql:
+        return jsonify({'error': 'name and sql required'}), 400
+    rows = execute_query(name, sql, params)
+    return jsonify(rows)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
