@@ -29,7 +29,7 @@ adjust values before running the stack.
 Activate the virtual environment and install dependencies::
 
     python -m venv .venv
-    source .venv/bin/activate
+    .\.venv\Scripts\Activate
     pip install -r requirements.txt
 
 Database migrations are stored as SQL files under `db/migrations`. The initial
