@@ -6,6 +6,7 @@ import click
 
 from algorips import __version__
 from algorips.core.analyzer import CodeAnalyzer
+from algorips.core import scraper
 from algorips.core.git import local
 from algorips.core.git.github import GitHubClient
 from algorips.core.plugins import PluginManager
@@ -78,6 +79,15 @@ def rag_cmd(docs: tuple[str, ...], query_text: str) -> None:
     results = engine.query(query_text)
     for res in results:
         click.echo(res)
+
+
+@cli.command()
+@click.argument("config_path")
+def scrape(config_path: str) -> None:
+    """Scrape pages defined in CONFIG_PATH."""
+    cfg = scraper.load_config(config_path)
+    results = scraper.WebScraper(cfg).scrape()
+    click.echo(json.dumps(results, indent=2))
 
 
 @cli.group()
