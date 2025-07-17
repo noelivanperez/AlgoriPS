@@ -9,10 +9,16 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>Choose project directory</h2>
+    <div className="p-4 space-y-4">
+      <h2 className="text-xl font-semibold">Choose project directory</h2>
       <label htmlFor="project-path" className="sr-only">Project path</label>
-      <input id="project-path" type="text" onChange={onSelect} placeholder="/path/to/project" />
+      <input
+        id="project-path"
+        type="text"
+        onChange={onSelect}
+        placeholder="/path/to/project"
+        className="border rounded p-2 w-full"
+      />
     </div>
   );
 };

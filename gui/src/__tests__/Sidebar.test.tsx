@@ -5,6 +5,6 @@ import Sidebar from '../components/Sidebar';
 
 test('renders sidebar', () => {
   const { getByText } = render(<Sidebar />);
-  expect(getByText('Home')).toBeInTheDocument();
-  expect(getByText('Repository')).toBeInTheDocument();
+  expect(getByText('Análisis')).toBeInTheDocument();
+  expect(getByText('Chat')).toBeInTheDocument();
 });

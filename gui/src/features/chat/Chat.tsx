@@ -127,42 +127,34 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>DB Query</h2>
-      <input
-        value={name}
-        onChange={e => setName(e.target.value)}
-        placeholder="connection name"
-      />
-      <textarea
-        value={sql}
-        onChange={e => setSql(e.target.value)}
-        placeholder="SELECT * FROM table"
-      />
-      <button onClick={runQuery}>Run</button>
-      <pre aria-label="query-results">{JSON.stringify(rows, null, 2)}</pre>
-      <h2>Chat</h2>
-      <div>
+    <div className="flex flex-col h-full border rounded-2xl shadow-lg">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4" aria-label="messages">
         {messages.map((m, idx) => (
-          <div key={idx} aria-label="message">
-            <strong>{m.role}:</strong> {m.content}
+          <div key={idx} className="flex items-start gap-2" aria-label="message">
+            <div className="w-8 h-8 rounded-full bg-gray-300 flex-shrink-0" />
+            <div>
+              <div className="text-sm text-gray-500">{m.role}</div>
+              <div>{m.content}</div>
+            </div>
           </div>
         ))}
         <div ref={endRef} />
       </div>
-      <div>
+      <div className="p-2 flex items-center gap-2 border-t">
         <input
           aria-label="prompt"
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="Ask something"/>
-        <button onClick={onSend}>Send</button>
-        <input aria-label="upload" type="file" onChange={onUpload}/>
-        <select value={dbConn} onChange={e => setDbConn(e.target.value)}>
+          placeholder="Escribe tu consulta…"
+          className="flex-1 border rounded p-2"
+        />
+        <button onClick={onSend} className="px-4 py-2 rounded bg-primary text-white">Send</button>
+        <input aria-label="upload" type="file" onChange={onUpload} />
+        <select value={dbConn} onChange={e => setDbConn(e.target.value)} className="border rounded p-1">
           <option value="default">default</option>
           <option value="analytics">analytics</option>
         </select>
-        <button onClick={onExport}>Export</button>
+        <button onClick={onExport} className="px-4 py-2 rounded bg-primary text-white">Export</button>
       </div>
     </div>
   );
