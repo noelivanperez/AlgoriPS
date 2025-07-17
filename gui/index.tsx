@@ -6,6 +6,7 @@ import Home from './src/features/home/Home';
 import Analyze from './src/features/analyze/Analyze';
 import Repository from './src/features/repository/Repository';
 import Plugins from './src/features/plugins/Plugins';
+import Metrics from './src/features/metrics/Metrics';
 import { useAppStore } from './src/store';
 
 const RootApp: React.FC = () => {
@@ -15,6 +16,7 @@ const RootApp: React.FC = () => {
       {projectPath ? <Analyze /> : <Home />}
       <Repository />
       <Plugins />
+      <Metrics />
     </Layout>
   );
 };

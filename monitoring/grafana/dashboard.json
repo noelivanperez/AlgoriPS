@@ -1,3 +1,22 @@
 {
-  "dashboard": "placeholder"
+  "dashboard": {
+    "title": "AlgoriPS Metrics",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Requests",
+        "targets": [
+          { "expr": "algorips_requests_total", "legendFormat": "requests" }
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Analyses",
+        "targets": [
+          { "expr": "algorips_analysis_total", "legendFormat": "analysis count" }
+        ]
+      }
+    ]
+  }
 }
+
