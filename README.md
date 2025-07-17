@@ -37,6 +37,17 @@ Requirements are listed in `requirements.txt`. A Docker Compose file is provided
 start services for MySQL, Adminer, and Ollama. Copy `.env.example` to `.env` and
 adjust values before running the stack.
 
+### Variables de entorno de la base de datos
+
+El archivo `.env` acepta ahora opciones para el pool de conexiones:
+
+* `MYSQL_POOL_SIZE` define el tamaño del pool (valor por defecto `5`).
+* `MYSQL_POOL_TIMEOUT` establece el tiempo máximo de espera en segundos para
+  obtener una conexión (valor por defecto `30`).
+
+Si en producción se requiere ajustar el pool, modifique estas variables y
+reinicie la aplicación. No se necesitan migraciones adicionales.
+
 Activate the virtual environment and install dependencies::
 
     python -m venv .venv
