@@ -85,3 +85,13 @@ export async function chatWithOllama(prompt: string, db: string): Promise<Readab
   }
   return reader;
 }
+
+export async function isOllamaUp(): Promise<boolean> {
+  try {
+    const url = (process as any).env.OLLAMA_URL || 'http://localhost:11434';
+    const res = await fetch(url, { method: 'HEAD' });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}

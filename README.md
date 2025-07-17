@@ -43,8 +43,11 @@ Activate the virtual environment and install dependencies::
     .\.venv\Scripts\Activate
     pip install -r requirements.txt
 
-Database migrations are stored as SQL files under `db/migrations`. The initial
-script creates a `projects` table that stores analyzed project metadata.
+Database migrations are stored as SQL files under `db/migrations`. Use the
+helper script `scripts/init_db.py` to create the database and apply all
+migrations automatically::
+
+    python scripts/init_db.py
 
 Run the CLI::
 
