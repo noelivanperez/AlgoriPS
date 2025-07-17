@@ -14,7 +14,10 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ active }) => (
-  <nav className="h-full bg-surface border-r border-gray-200 p-4 hidden md:block" aria-label="Sidebar">
+  <nav
+    className="h-full bg-surface border-r border-gray-200 p-4 hidden md:block md:w-60 lg:w-72"
+    aria-label="Sidebar"
+  >
     <ul className="space-y-4">
       {items.map(({ icon: Icon, label }) => (
         <li key={label} className={label === active ? 'text-primary font-semibold' : ''}>
