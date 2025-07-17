@@ -27,6 +27,9 @@ servicios de base de datos y Ollama::
     cp .env.example .env
     docker compose up -d
 
+You can switch the Ollama model by editing the `OLLAMA_MODEL` variable inside
+`.env`. The default is `llama3`.
+
 Para detener todos los servicios::
 
     docker compose down
@@ -66,6 +69,10 @@ Ejecute el análisis de código en un directorio::
 Run tests with::
 
     pytest
+
+Interact directly with Ollama::
+
+    python -m algorips ollama chat "Hola" --model llama3
 
 ## Repository CLI
 

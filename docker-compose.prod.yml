@@ -6,5 +6,6 @@ services:
       - OLLAMA_TEMPERATURE=0.7
       - OLLAMA_MAX_TOKENS=4096
       - OLLAMA_BATCH_SIZE=8
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3}
     ports:
       - "8000:8000"

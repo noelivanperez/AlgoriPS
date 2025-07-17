@@ -11,11 +11,13 @@ from algorips.core.git import local
 from algorips.core.git.github import GitHubClient
 from algorips.core.plugins import PluginManager
 from algorips.core.rag import RAGEngine
+from algorips.core.ollama_client import OllamaClient
 
 DEFAULT_CONFIG = (
     "database:\n"
     "  url: mysql+pymysql://root:example@localhost/algorips\n"
     "ollama_url: http://localhost:11434\n"
+    "ollama_model: llama3\n"
 )
 
 
@@ -202,6 +204,21 @@ def plugin_uninstall(name: str) -> None:
     """Uninstall plugin by NAME."""
     plugin_manager.uninstall(name)
     click.echo("Plugin uninstalled")
+
+
+@cli.group()
+def ollama() -> None:
+    """Interact with the Ollama language model."""
+
+
+@ollama.command("chat")
+@click.argument("prompt")
+@click.option("--model", default=None, help="Model to use")
+def ollama_chat(prompt: str, model: str | None) -> None:
+    """Send PROMPT to Ollama and print the response."""
+    client = OllamaClient(model=model)
+    result = client.send_prompt(prompt)
+    click.echo(json.dumps(result, indent=2))
 
 if __name__ == '__main__':
     cli()

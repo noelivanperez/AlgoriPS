@@ -19,9 +19,10 @@ def test_ollama_connection(monkeypatch):
 
     monkeypatch.setattr('requests.post', fake_post)
 
+    monkeypatch.setenv('OLLAMA_MODEL', 'mixtral')
     client = OllamaClient('localhost', 8000)
     result = client.send_prompt('hello')
 
     assert result == {'status': 'ok'}
     assert calls['url'].endswith('/v1/completions')
-    assert calls['json'] == {'prompt': 'hello'}
+    assert calls['json'] == {'prompt': 'hello', 'model': 'mixtral'}

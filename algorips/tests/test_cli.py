@@ -46,3 +46,27 @@ def test_repo_branch(tmp_path):
         assert result.exit_code == 0
         head = subprocess.run(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], capture_output=True, text=True, check=True).stdout.strip()
         assert head == 'feature'
+
+
+def test_ollama_chat(monkeypatch):
+    calls = {}
+
+    def fake_post(url, json):
+        calls['url'] = url
+        calls['json'] = json
+
+        class R:
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                return {'reply': 'ok'}
+
+        return R()
+
+    monkeypatch.setattr('requests.post', fake_post)
+
+    runner = CliRunner()
+    result = runner.invoke(cli, ['ollama', 'chat', 'hi', '--model', 'test'])
+    assert result.exit_code == 0
+    assert calls['json'] == {'prompt': 'hi', 'model': 'test'}

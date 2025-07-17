@@ -38,6 +38,9 @@ def chat_route():
     """Forward chat prompts to the Ollama client."""
     data = request.get_json() or {}
     prompt = data.get('prompt', '')
+    model = data.get('model')
+    if model:
+        client.set_model(model)
     result = client.send_prompt(prompt)
     return jsonify(result)
 

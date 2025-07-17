@@ -22,6 +22,15 @@ Ejemplo de respuesta (parcial):
 algorips_requests_total 3
 ```
 
+### `POST /chat`
+Envía un *prompt* a Ollama y retorna la respuesta del modelo. Se puede indicar el
+modelo con el campo `model`.
+
+Ejemplo de solicitud:
+```json
+{ "prompt": "Hola", "model": "llama3" }
+```
+
 ## Esquemas JSON
 A continuación se muestran los esquemas básicos que usa la aplicación.
 
