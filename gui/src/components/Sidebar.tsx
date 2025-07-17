@@ -1,4 +1,5 @@
 import React from 'react';
+import { Layers, Wand2, FlaskConical, Plug, Database } from 'lucide-react';
 import { Layers, Wand2, FlaskConical, Plug, BarChart2 } from 'lucide-react';
 
 const Sidebar: React.FC = () => (
@@ -9,6 +10,7 @@ const Sidebar: React.FC = () => (
       <li><FlaskConical size={20}/> Tests</li>
       <li><Plug size={20}/> Plugins</li>
       <li><BarChart2 size={20}/> Metrics</li>
+      <li><Database size={20}/> DB</li>
     </ul>
   </nav>
 );

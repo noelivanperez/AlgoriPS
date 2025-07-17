@@ -59,6 +59,20 @@ export async function uninstallPlugin(name: string): Promise<void> {
   console.log('uninstallPlugin', name);
 }
 
+// Database API
+export async function executeQuery(
+  name: string,
+  sql: string,
+  params?: Record<string, unknown>
+): Promise<any[]> {
+  const resp = await fetch('/db/query', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, sql, params }),
+  });
+  return resp.json();
+}
+
 export async function chatWithOllama(prompt: string, db: string): Promise<ReadableStreamDefaultReader<Uint8Array>> {
   const res = await fetch('/chat', {
     method: 'POST',
