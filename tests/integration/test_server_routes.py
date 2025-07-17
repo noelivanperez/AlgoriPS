@@ -38,16 +38,24 @@ def test_analyze_success(monkeypatch, client, tmp_path):
 
 @pytest.mark.integration
 def test_chat_route(monkeypatch, client):
-    expected = {'response': 'ok'}
+    expected = {'choices': [{'text': 'ok'}]}
+    saved = {}
 
     def fake_send(prompt):
         assert prompt == 'hello'
         return expected
 
+    def fake_save(prompt, response):
+        saved['prompt'] = prompt
+        saved['response'] = response
+
     monkeypatch.setattr('algorips.core.server.client.send_prompt', fake_send)
-    resp = client.post('/chat', json={'prompt': 'hello'})
+    monkeypatch.setattr('algorips.core.server.save_conversation', fake_save)
+    resp = client.post('/chat', json={'prompt': 'hello', 'temperature': 0.5})
     assert resp.status_code == 200
     assert resp.get_json() == expected
+    assert saved['prompt'] == 'hello'
+    assert saved['response'] == 'ok'
 
 
 @pytest.mark.integration
@@ -71,3 +79,25 @@ def test_db_query_missing(monkeypatch, client):
     resp = client.post('/db/query', json={'name': 'main'})
     assert resp.status_code == 400
     assert resp.get_json() == {'error': 'name and sql required'}
+
+
+@pytest.mark.integration
+def test_history_routes(monkeypatch, client):
+    conversations = [
+        {'id': 1, 'prompt': 'p', 'response': 'r', 'timestamp': 't'},
+    ]
+
+    monkeypatch.setattr('algorips.core.server.list_all', lambda: conversations)
+    resp = client.get('/history')
+    assert resp.status_code == 200
+    assert resp.get_json() == conversations
+
+    deleted = {}
+
+    def fake_delete(cid=None):
+        deleted['id'] = cid
+
+    monkeypatch.setattr('algorips.core.server.delete_conversation', fake_delete)
+    resp = client.delete('/history/1')
+    assert resp.status_code == 200
+    assert deleted['id'] == 1
