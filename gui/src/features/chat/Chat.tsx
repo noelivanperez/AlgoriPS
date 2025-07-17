@@ -1,0 +1,148 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { chatWithOllama } from '../../utils/api';
+
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+const DB_NAME = 'chat';
+const STORE_NAME = 'messages';
+
+async function openDB(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = () => {
+      req.result.createObjectStore(STORE_NAME, { autoIncrement: true });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function getAllMessages(): Promise<Message[]> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result as Message[]);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function addMessage(msg: Message): Promise<void> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).add(msg);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+async function exportMessages(): Promise<string> {
+  const msgs = await getAllMessages();
+  return JSON.stringify(msgs, null, 2);
+}
+
+const Chat: React.FC = () => {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [dbConn, setDbConn] = useState('default');
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    getAllMessages().then(setMessages).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const send = async (prompt: string) => {
+    const userMsg: Message = { role: 'user', content: prompt };
+    setMessages(prev => [...prev, userMsg]);
+    await addMessage(userMsg);
+    setInput('');
+
+    try {
+      const reader = await chatWithOllama(prompt, dbConn);
+      let result = '';
+      const decoder = new TextDecoder();
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        result += decoder.decode(value);
+        setMessages(prev => {
+          const updated = prev.slice();
+          const last = updated[updated.length - 1];
+          if (last.role === 'assistant') {
+            last.content = result;
+          } else {
+            updated.push({ role: 'assistant', content: result });
+          }
+          return [...updated];
+        });
+      }
+      await addMessage({ role: 'assistant', content: result });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const onSend = () => {
+    if (input.trim()) send(input.trim());
+  };
+
+  const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      send(reader.result as string);
+    };
+    reader.readAsText(file);
+  };
+
+  const onExport = async () => {
+    const json = await exportMessages();
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chat_history.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div>
+      <h2>Chat</h2>
+      <div>
+        {messages.map((m, idx) => (
+          <div key={idx} aria-label="message">
+            <strong>{m.role}:</strong> {m.content}
+          </div>
+        ))}
+        <div ref={endRef} />
+      </div>
+      <div>
+        <input
+          aria-label="prompt"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="Ask something"/>
+        <button onClick={onSend}>Send</button>
+        <input aria-label="upload" type="file" onChange={onUpload}/>
+        <select value={dbConn} onChange={e => setDbConn(e.target.value)}>
+          <option value="default">default</option>
+          <option value="analytics">analytics</option>
+        </select>
+        <button onClick={onExport}>Export</button>
+      </div>
+    </div>
+  );
+};
+
+export default Chat;

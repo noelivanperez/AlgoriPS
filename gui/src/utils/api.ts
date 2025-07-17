@@ -58,3 +58,16 @@ export async function installPlugin(path: string): Promise<void> {
 export async function uninstallPlugin(name: string): Promise<void> {
   console.log('uninstallPlugin', name);
 }
+
+export async function chatWithOllama(prompt: string, db: string): Promise<ReadableStreamDefaultReader<Uint8Array>> {
+  const res = await fetch('/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt, db }),
+  });
+  const reader = res.body?.getReader();
+  if (!reader) {
+    throw new Error('Streaming not supported');
+  }
+  return reader;
+}
