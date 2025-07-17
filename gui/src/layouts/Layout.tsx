@@ -6,7 +6,7 @@ import Footer from '../components/Footer';
 const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className="min-h-screen grid md:grid-cols-[240px_1fr]">
+    <div className="min-h-screen md:grid md:grid-cols-[auto_1fr]">
       <Sidebar active="Dashboard" />
       <button
         className="md:hidden p-2 m-2 rounded bg-primary text-white"
