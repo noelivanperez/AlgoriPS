@@ -76,3 +76,18 @@ Clone and manage repositories::
     python -m algorips repo commit "add feature"
     python -m algorips repo pr create --owner user --repo repo --token TOKEN "My PR"
     python -m algorips repo pr merge 1 --owner user --repo repo --token TOKEN
+
+## Web Scraper Configuration
+
+The ``scrape`` command reads a YAML file describing targets::
+
+    targets:
+      - url: http://example.com
+        selectors:
+          title: h1
+          heading: div.wrapper h1
+
+PyYAML is used to parse this configuration. If PyYAML is not available, the
+built-in fallback parser only understands the structure above and does not
+support nested mappings or complex YAML features. Nested selectors therefore
+require PyYAML.
