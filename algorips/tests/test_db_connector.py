@@ -69,3 +69,33 @@ def test_execute_query(monkeypatch):
     assert rows == [{'a': 1}]
     assert cred_conn.executed[0][0].startswith('SELECT host')
     assert query_conn.executed[0][0].startswith('select *')
+
+
+def test_execute_query_returns_error(monkeypatch):
+    cred_result = DummyResult([
+        {
+            'host': 'h',
+            'port': 3306,
+            'username': 'u',
+            'password': 'p',
+            'database_name': 'db',
+        }
+    ])
+
+    dc._engines.clear()
+
+    cred_conn = DummyConn({'credentials': cred_result, 'query': None})
+    query_conn = DummyConn({'credentials': cred_result, 'query': None})
+
+    def raise_error(stmt, params=None):
+        raise dc.SQLAlchemyError('boom')
+
+    query_conn.execute = raise_error
+
+    monkeypatch.setattr(dc, 'get_engine', lambda: DummyEngine(cred_conn))
+    monkeypatch.setattr(dc, 'create_engine', lambda url, **kw: DummyEngine(query_conn))
+
+    rows = dc.execute_query('name', 'select * from t', {})
+
+    assert isinstance(rows, dict)
+    assert 'error' in rows
