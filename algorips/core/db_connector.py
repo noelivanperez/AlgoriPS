@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+import logging
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import SQLAlchemyError
 
 from .db import get_engine
 
 # Cache of SQLAlchemy engines per connection name
 _engines: dict[str, Any] = {}
+
+logger = logging.getLogger(__name__)
 
 
 def _get_credentials(name: str) -> Dict[str, Any]:
@@ -41,7 +45,11 @@ def _get_engine(name: str) -> Any:
 def execute_query(name: str, sql: str, params: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
     """Execute SQL on the database referenced by ``name`` and return result rows."""
     engine = _get_engine(name)
-    with engine.connect() as conn:
-        result = conn.execute(text(sql), params or {})
-        rows = [dict(row._mapping) for row in result]
-    return rows
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text(sql), params or {})
+            rows = [dict(row._mapping) for row in result]
+        return rows
+    except SQLAlchemyError as exc:
+        logger.exception("Query execution failed")
+        return {"error": str(exc)}
