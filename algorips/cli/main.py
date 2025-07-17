@@ -1,4 +1,7 @@
 import json
+import itertools
+import threading
+import time
 from pathlib import Path
 import subprocess
 
@@ -6,7 +9,8 @@ import click
 
 from algorips import __version__
 from algorips.core.analyzer import CodeAnalyzer
-from algorips.core import scraper
+from algorips.core import scraper, config as cfg
+from algorips.core.llm import OllamaProvider
 from algorips.core.git import local
 from algorips.core.git.github import GitHubClient
 from algorips.core.plugins import PluginManager
@@ -19,6 +23,9 @@ DEFAULT_CONFIG = (
     "ollama_url: http://localhost:11434\n"
     "ollama_model: llama3\n"
 )
+
+CONFIG = cfg.load()
+provider = OllamaProvider()
 
 
 @click.group()
@@ -69,6 +76,39 @@ def apply_rule(rule_id: str, file_path: str) -> None:
         click.echo("Patch applied")
     else:
         click.echo("Failed to apply patch")
+
+
+@cli.command()
+@click.argument("prompt", nargs=-1)
+@click.option("--model", default=None, help="Ollama model to use")
+def chat(prompt: tuple[str, ...], model: str | None) -> None:
+    """Send PROMPT to Ollama and print the response."""
+    mdl = model or CONFIG.get("model")
+    if not provider.model_exists(mdl):
+        click.echo(f"Model '{mdl}' not available", err=True)
+        raise click.Abort()
+    text = " ".join(prompt)
+
+    stop = threading.Event()
+
+    def spinner() -> None:
+        for ch in itertools.cycle("|/-\\"):
+            if stop.is_set():
+                break
+            click.echo(ch, nl=False)
+            click.echo("\b", nl=False)
+            time.sleep(0.1)
+
+    t = threading.Thread(target=spinner)
+    t.start()
+    try:
+        result = provider.send_prompt(text, mdl)
+    finally:
+        stop.set()
+        t.join()
+    click.echo(json.dumps(result, indent=2))
+    CONFIG["model"] = mdl
+    cfg.save(CONFIG)
 
 
 @cli.command("rag")
@@ -175,6 +215,35 @@ def pr_merge(pr_number: int, owner: str, repo_name: str, token: str) -> None:
 
 # Plugin commands
 plugin_manager = PluginManager()
+
+
+@cli.group()
+def models() -> None:
+    """Model related commands."""
+
+
+@models.command("ls")
+def models_ls() -> None:
+    """List available Ollama models."""
+    try:
+        for name in provider.list_models():
+            click.echo(name)
+    except Exception as exc:
+        click.echo(f"Failed to list models: {exc}", err=True)
+
+
+@cli.group()
+def ollama() -> None:
+    """Ollama helper commands."""
+
+
+@ollama.command("status")
+def ollama_status() -> None:
+    """Check if the Ollama server is reachable."""
+    if provider.health():
+        click.echo("Ollama is up")
+    else:
+        click.echo("Ollama is unreachable", err=True)
 
 
 @cli.group()
