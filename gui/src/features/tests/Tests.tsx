@@ -13,8 +13,8 @@ const Tests: React.FC = () => {
 
   if (loading) return <Spinner />;
   return (
-    <div>
-      <h2>Tests</h2>
+    <div className="space-y-4 max-w-5xl mx-auto">
+      <h2 className="text-lg font-semibold">Tests</h2>
       <Card>{report ? JSON.stringify(report) : 'No report'}</Card>
     </div>
   );

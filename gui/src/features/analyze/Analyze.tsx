@@ -15,8 +15,8 @@ const Analyze: React.FC = () => {
 
   if (loading) return <Spinner />;
   return (
-    <div>
-      <h2>Analysis</h2>
+    <div className="space-y-4 max-w-5xl mx-auto">
+      <h2 className="text-lg font-semibold">Analysis</h2>
       <Card>
         <LineChart width={400} height={200} data={data} aria-label="Metrics chart">
           <XAxis dataKey="name" />

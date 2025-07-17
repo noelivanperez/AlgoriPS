@@ -19,19 +19,27 @@ const Repository: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Repository</h2>
-      <div>
-        <input value={url} onChange={e => setUrl(e.target.value)} placeholder="repo url" />
-        <button onClick={handleClone}>Clone</button>
+    <div className="space-y-4 max-w-5xl mx-auto">
+      <h2 className="text-lg font-semibold">Repository</h2>
+      <div className="flex items-center gap-2">
+        <input
+          value={url}
+          onChange={e => setUrl(e.target.value)}
+          placeholder="repo url"
+          className="border rounded p-2 flex-1"
+        />
+        <button className="px-4 py-2 rounded bg-primary text-white" onClick={handleClone}>Clone</button>
       </div>
-      <button onClick={() => createBranch('feature')}>New Branch</button>
-      <button onClick={() => commitChanges('update')}>Commit</button>
-      <button onClick={openPullRequest}>Open PR</button>
-      <ul>
+      <div className="flex flex-wrap gap-2">
+        <button className="px-3 py-1 rounded bg-primary text-white" onClick={() => createBranch('feature')}>New Branch</button>
+        <button className="px-3 py-1 rounded bg-primary text-white" onClick={() => commitChanges('update')}>Commit</button>
+        <button className="px-3 py-1 rounded bg-primary text-white" onClick={openPullRequest}>Open PR</button>
+      </div>
+      <ul className="divide-y">
         {prs.map(pr => (
-          <li key={pr.number}>
-            PR #{pr.number} <button onClick={() => mergePullRequest(pr.number)}>Merge</button>
+          <li key={pr.number} className="py-1 flex items-center justify-between">
+            <span>PR #{pr.number}</span>
+            <button className="text-primary" onClick={() => mergePullRequest(pr.number)}>Merge</button>
           </li>
         ))}
       </ul>

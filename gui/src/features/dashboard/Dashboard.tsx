@@ -8,7 +8,7 @@ const metrics = [
 ];
 
 const Dashboard: React.FC = () => (
-  <div className="p-4 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+  <div className="grid gap-6 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 max-w-5xl mx-auto">
     {metrics.map((m, idx) => (
       <div key={idx} className="rounded-2xl shadow-lg bg-surface p-4 flex items-center space-x-4">
         {m.icon}

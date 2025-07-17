@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
 import parseMetrics, { MetricPoint } from '../../utils/metricsParser';
 
 const Metrics: React.FC = () => {
@@ -26,20 +26,24 @@ const Metrics: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h2>Metrics</h2>
+    <div className="space-y-4 max-w-5xl mx-auto">
+      <h2 className="text-lg font-semibold">Metrics</h2>
       {error && (
         <div role="alert" style={{ color: 'red' }}>
           {error}
         </div>
       )}
-      <LineChart width={400} height={200} data={data} aria-label="Metrics chart">
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis allowDecimals={false} />
-        <Tooltip />
-        <Line type="monotone" dataKey="value" stroke="#8884d8" />
-      </LineChart>
+      <div className="w-full h-60">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} aria-label="Metrics chart">
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis allowDecimals={false} />
+            <Tooltip />
+            <Line type="monotone" dataKey="value" stroke="#8884d8" />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

@@ -35,24 +35,29 @@ const Plugins: React.FC = () => {
 
   if (loading) return <Spinner />;
   return (
-    <div>
-      <h2>Plugins</h2>
-      <div>
+    <div className="space-y-4 max-w-3xl mx-auto">
+      <h2 className="text-lg font-semibold">Plugins</h2>
+      <div className="flex items-center gap-2">
         <input
           value={path}
           onChange={e => setPath(e.target.value)}
           placeholder="plugin path"
+          className="border rounded p-2 flex-1"
         />
-        <button onClick={onInstall}>Install</button>
+        <button className="px-4 py-2 rounded bg-primary text-white" onClick={onInstall}>Install</button>
       </div>
-      <ul>
+      <ul className="divide-y">
         {plugins.map(p => (
-          <li key={p.name}>
-            {p.name} {p.version}{' '}
-            <button onClick={() => onUninstall(p.name)}>Uninstall</button>{' '}
-            <button onClick={() => window.open(`/plugins/${p.name}/README.md`)}>
-              View docs
-            </button>
+          <li key={p.name} className="py-1 flex items-center justify-between">
+            <span>
+              {p.name} {p.version}{' '}
+            </span>
+            <div className="flex gap-2">
+              <button className="text-primary" onClick={() => onUninstall(p.name)}>Uninstall</button>{' '}
+              <button className="text-primary" onClick={() => window.open(`/plugins/${p.name}/README.md`)}>
+                View docs
+              </button>
+            </div>
           </li>
         ))}
       </ul>

@@ -9,7 +9,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-6 max-w-lg mx-auto bg-surface rounded-xl shadow space-y-4">
       <h2 className="text-xl font-semibold">Choose project directory</h2>
       <label htmlFor="project-path" className="sr-only">Project path</label>
       <input

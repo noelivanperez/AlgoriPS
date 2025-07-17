@@ -18,9 +18,15 @@ const SettingsPage: React.FC = () => {
   };
 
   return (
-    <form onSubmit={onSubmit} aria-label="Settings form">
-      <input name="example" onChange={onChange} value={(local as any).example || ''} aria-label="Example setting" />
-      <button type="submit">Save</button>
+    <form onSubmit={onSubmit} aria-label="Settings form" className="space-y-4 max-w-md mx-auto">
+      <input
+        name="example"
+        onChange={onChange}
+        value={(local as any).example || ''}
+        aria-label="Example setting"
+        className="border rounded p-2 w-full"
+      />
+      <button type="submit" className="px-4 py-2 rounded bg-primary text-white">Save</button>
     </form>
   );
 };

@@ -13,8 +13,8 @@ const Diffs: React.FC = () => {
 
   if (loading) return <Spinner />;
   return (
-    <div>
-      <h2>Diffs</h2>
+    <div className="space-y-4 max-w-5xl mx-auto">
+      <h2 className="text-lg font-semibold">Diffs</h2>
       {diffs.map((d, idx) => (
         <Card key={idx}>{(d as any).path}</Card>
       ))}
