@@ -16,8 +16,8 @@ function createWindow() {
   if (process.env.NODE_ENV === 'development') {
     win.loadURL('http://localhost:3000');
   } else {
-    const devPath = path.join(__dirname, 'public', 'index.html');
-    const prodPath = path.join(__dirname, '..', 'public', 'index.html');
+    const devPath = path.join(__dirname, 'dist', 'index.html');
+    const prodPath = path.join(__dirname, '..', 'dist', 'index.html');
     const target = fs.existsSync(devPath) ? devPath : prodPath;
     win.loadFile(target);
   }
