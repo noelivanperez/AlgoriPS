@@ -82,12 +82,28 @@ class WebScraper:
         self.config = config
 
     def fetch(self, url: str) -> str:
-        if _requests and hasattr(_requests, "get"):
-            resp = _requests.get(url, timeout=10)
-            resp.raise_for_status()
-            return resp.text
-        with request.urlopen(url, timeout=10) as resp:
-            return resp.read().decode()
+        """Retrieve *url* with basic retry logic.
+
+        Network calls may intermittently fail.  In those cases the
+        scraper will retry a few times before giving up and raising a
+        :class:`RuntimeError` with a clear message.
+        """
+
+        for attempt in range(3):
+            try:
+                if _requests and hasattr(_requests, "get"):
+                    resp = _requests.get(url, timeout=10)
+                    resp.raise_for_status()
+                    return resp.text
+                with request.urlopen(url, timeout=10) as resp:
+                    return resp.read().decode()
+            except Exception as exc:  # pragma: no cover - exercised in tests
+                if attempt == 2:
+                    raise RuntimeError(f"Network error while fetching {url}") from exc
+                # Simple backoff
+                import time
+
+                time.sleep(1)
 
     def scrape_target(self, target: ScrapeTarget) -> Dict[str, Any]:
         html = self.fetch(target.url)
