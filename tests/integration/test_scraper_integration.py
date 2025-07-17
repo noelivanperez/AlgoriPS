@@ -28,3 +28,23 @@ def test_scraper_integration(tmp_path: Path):
         thread.join()
 
 
+@pytest.mark.integration
+def test_scraper_timeout(monkeypatch):
+    """Ensure network errors propagate as RuntimeError with retries."""
+
+    from urllib.error import URLError
+
+    def fake_urlopen(url, timeout=10):
+        raise URLError("timed out")
+
+    monkeypatch.setattr("algorips.core.scraper.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("time.sleep", lambda s: None)
+
+    url = "http://example.com"
+    cfg = ScrapeConfig([ScrapeTarget(url, {"title": "h1"})])
+    scraper = WebScraper(cfg)
+
+    with pytest.raises(RuntimeError, match="Network error while fetching"):
+        scraper.scrape()
+
+
