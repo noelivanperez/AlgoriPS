@@ -34,3 +34,20 @@ def test_scrape(monkeypatch):
     result = scraper.scrape()
     assert result == [{"url": "http://example.com", "data": {"title": "Hello"}}]
 
+
+def test_scrape_nested_selectors(monkeypatch):
+    html = "<html><body><div class='wrapper'><h1>Hello</h1></div></body></html>"
+
+    def fake_fetch(self, url: str) -> str:  # type: ignore
+        return html
+
+    monkeypatch.setattr(WebScraper, "fetch", fake_fetch)
+    config = ScrapeConfig(
+        [ScrapeTarget("http://example.com", {"title": "div.wrapper h1"})]
+    )
+    scraper = WebScraper(config)
+    result = scraper.scrape()
+    assert result == [
+        {"url": "http://example.com", "data": {"title": "Hello"}}
+    ]
+

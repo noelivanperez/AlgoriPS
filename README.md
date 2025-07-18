@@ -99,3 +99,18 @@ Plugin management endpoints:
 - `POST /plugins/install` with `{path}` installs a plugin
 - `DELETE /plugins/<name>` removes a plugin
 - Plugin documentation can be retrieved from `/plugins/<name>/README.md`
+
+## Web Scraper Configuration
+
+The ``scrape`` command reads a YAML file describing targets::
+
+    targets:
+      - url: http://example.com
+        selectors:
+          title: h1
+          heading: div.wrapper h1
+
+PyYAML is used to parse this configuration. If PyYAML is not available, the
+built-in fallback parser only understands the structure above and does not
+support nested mappings or complex YAML features. Nested selectors therefore
+require PyYAML.
