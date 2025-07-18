@@ -1,0 +1,3 @@
+database:
+  url: mysql+pymysql://root:example@localhost/algorips
+ollama_url: http://localhost:11434
