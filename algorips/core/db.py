@@ -17,8 +17,16 @@ def get_engine():
         password = os.getenv("MYSQL_PASSWORD", "example")
         host = os.getenv("MYSQL_HOST", "localhost")
         database = os.getenv("MYSQL_DATABASE", "algorips")
+        pool_size = int(os.getenv("MYSQL_POOL_SIZE", "5"))
+        pool_timeout = int(os.getenv("MYSQL_POOL_TIMEOUT", "30"))
         url = f"mysql+pymysql://{user}:{password}@{host}/{database}"
-        _engine = create_engine(url, pool_pre_ping=True, future=True)
+        _engine = create_engine(
+            url,
+            pool_pre_ping=True,
+            pool_size=pool_size,
+            pool_timeout=pool_timeout,
+            future=True,
+        )
     return _engine
 
 

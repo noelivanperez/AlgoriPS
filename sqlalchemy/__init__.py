@@ -24,7 +24,7 @@ class DummyEngine:
         return DummyConnection()
 
 
-def create_engine(url, pool_pre_ping=True, future=True):
+def create_engine(url, pool_pre_ping=True, pool_size=None, pool_timeout=None, future=True):
     return DummyEngine()
 
 
