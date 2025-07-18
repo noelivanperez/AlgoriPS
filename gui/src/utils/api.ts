@@ -21,42 +21,62 @@ export async function saveSettings(cfg: Settings): Promise<void> {
 
 // Repository API stubs
 export async function cloneRepo(url: string, dest: string): Promise<void> {
-  console.log('cloneRepo', url, dest);
+  await fetch('/repo/clone', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, dest }),
+  });
 }
 
 export async function createBranch(name: string): Promise<void> {
-  console.log('createBranch', name);
+  await fetch('/repo/branch', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name }),
+  });
 }
 
 export async function commitChanges(msg: string): Promise<void> {
-  console.log('commitChanges', msg);
+  await fetch('/repo/commit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: msg }),
+  });
 }
 
 export async function listPullRequests(): Promise<any[]> {
-  console.log('listPullRequests');
-  return [];
+  const res = await fetch('/repo/pr');
+  return res.json();
 }
 
 export async function openPullRequest(): Promise<void> {
-  console.log('openPullRequest');
+  await fetch('/repo/pr/create', { method: 'POST' });
 }
 
 export async function mergePullRequest(num: number): Promise<void> {
-  console.log('mergePullRequest', num);
+  await fetch('/repo/pr/merge', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ number: num }),
+  });
 }
 
 // Plugin API stubs
 export async function listPlugins(): Promise<any[]> {
-  console.log('listPlugins');
-  return [];
+  const res = await fetch('/plugins');
+  return res.json();
 }
 
 export async function installPlugin(path: string): Promise<void> {
-  console.log('installPlugin', path);
+  await fetch('/plugins/install', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ path }),
+  });
 }
 
 export async function uninstallPlugin(name: string): Promise<void> {
-  console.log('uninstallPlugin', name);
+  await fetch(`/plugins/${name}`, { method: 'DELETE' });
 }
 
 // Database API

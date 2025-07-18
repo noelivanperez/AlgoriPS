@@ -83,3 +83,19 @@ Clone and manage repositories::
     python -m algorips repo commit "add feature"
     python -m algorips repo pr create --owner user --repo repo --token TOKEN "My PR"
     python -m algorips repo pr merge 1 --owner user --repo repo --token TOKEN
+
+## HTTP API Endpoints
+
+Repository operations are exposed by the Flask server:
+- `POST /repo/clone` with `{url, dest}`
+- `POST /repo/branch` with `{name}`
+- `POST /repo/commit` with `{message}`
+- `GET  /repo/pr` returns open pull requests
+- `POST /repo/pr/create` creates a pull request
+- `POST /repo/pr/merge` with `{number}` merges a PR
+
+Plugin management endpoints:
+- `GET  /plugins` returns installed plugins
+- `POST /plugins/install` with `{path}` installs a plugin
+- `DELETE /plugins/<name>` removes a plugin
+- Plugin documentation can be retrieved from `/plugins/<name>/README.md`
