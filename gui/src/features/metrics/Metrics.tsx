@@ -1,29 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-
-interface MetricPoint {
-  name: string;
-  value: number;
-}
+import parseMetrics, { MetricPoint } from '../../utils/metricsParser';
 
 const Metrics: React.FC = () => {
   const [data, setData] = useState<MetricPoint[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchMetrics = async () => {
     try {
       const res = await fetch('/metrics');
       const text = await res.text();
-      const counters: MetricPoint[] = [];
-      text.split('\n').forEach(line => {
-        if (line.startsWith('#')) return;
-        const [key, val] = line.split(' ');
-        if (key && val && key.endsWith('_total')) {
-          counters.push({ name: key, value: parseFloat(val) });
-        }
-      });
+      const counters = parseMetrics(text);
       setData(counters);
+      setError(null);
     } catch (err) {
       console.error('Failed to load metrics', err);
+      setError('Could not parse metrics');
     }
   };
 
@@ -36,6 +28,11 @@ const Metrics: React.FC = () => {
   return (
     <div>
       <h2>Metrics</h2>
+      {error && (
+        <div role="alert" style={{ color: 'red' }}>
+          {error}
+        </div>
+      )}
       <LineChart width={400} height={200} data={data} aria-label="Metrics chart">
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
