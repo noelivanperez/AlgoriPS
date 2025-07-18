@@ -12,3 +12,5 @@ pytest-benchmark
 bandit
 pip-audit
 PyYAML
+fastapi
+uvicorn

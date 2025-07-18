@@ -111,6 +111,11 @@ Plugin management endpoints:
 - `DELETE /plugins/<name>` removes a plugin
 - Plugin documentation can be retrieved from `/plugins/<name>/README.md`
 
+An optional FastAPI server implementing these endpoints lives in
+`fastapi_app/main.py`. Launch it with::
+
+    uvicorn fastapi_app.main:app --reload
+
 ## Web Scraper Configuration
 
 The ``scrape`` command reads a YAML file describing targets::
