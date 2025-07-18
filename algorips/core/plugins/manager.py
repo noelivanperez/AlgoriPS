@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import logging
 import shutil
 from importlib import metadata
 from pathlib import Path
 from typing import Any, Dict, Iterable
 
 from .contract import BasePlugin
+
+
+logger = logging.getLogger(__name__)
 
 
 class PluginManager:
@@ -62,7 +66,16 @@ class PluginManager:
                 plugin_cls = getattr(module, "Plugin", None)
                 if not plugin_cls:
                     continue
-                plugin: BasePlugin = plugin_cls()
+                try:
+                    plugin: BasePlugin = plugin_cls()
+                except TypeError as exc:  # pragma: no cover - invalid plugin
+                    logger.warning("Skipping plugin %s: %s", path.name, exc)
+                    continue
+                if not all(callable(getattr(plugin, m, None)) for m in ("name", "version", "register")):
+                    logger.warning(
+                        "Skipping plugin %s: missing required methods", path.name
+                    )
+                    continue
                 self._plugins[plugin.name()] = plugin
 
         for ep in metadata.entry_points().select(group="algorips.plugins"):
@@ -70,7 +83,16 @@ class PluginManager:
                 plugin_cls = ep.load()
             except Exception:  # pragma: no cover - error loading external plugin
                 continue
-            plugin = plugin_cls()
+            try:
+                plugin = plugin_cls()
+            except TypeError as exc:  # pragma: no cover - invalid plugin
+                logger.warning("Skipping plugin %s: %s", ep.name, exc)
+                continue
+            if not all(callable(getattr(plugin, m, None)) for m in ("name", "version", "register")):
+                logger.warning(
+                    "Skipping plugin %s: missing required methods", ep.name
+                )
+                continue
             self._plugins[plugin.name()] = plugin
         return self._plugins
 
@@ -94,7 +116,11 @@ class PluginManager:
         if name not in self._plugins:
             self.discover()
         plugin = self._plugins[name]
-        plugin.register(self.cli, self.gui_registry)
+        try:
+            plugin.register(self.cli, self.gui_registry)
+        except Exception as exc:  # pragma: no cover - plugin error
+            logger.warning("Plugin %s failed to register: %s", name, exc)
+            return
         self._active.add(name)
         self._save_state()
 
